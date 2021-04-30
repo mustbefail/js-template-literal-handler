@@ -8,11 +8,16 @@ export const level = 80;
   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
 */
 export function transform(strings, ...expressions) {
-  const result = expressions.reduce((acc, exp, idx) => {
+  let replacers = [];
+  const formatedString = expressions.reduce((acc, exp, idx) => {
     let transformedExp;
+
     if (typeof exp === 'function') {
-      transformedExp = exp(strings[idx + 1], expressions[idx + 1]);
-      console.log(transformedExp);
+      const afterFunStr = strings[idx + 1];
+      const afterFunExp = expressions[idx + 1];
+      const substr = `${afterFunStr}${transform`${afterFunExp}`}`;
+      transformedExp = exp(afterFunStr, afterFunExp);
+      replacers.push(substr);
     } else if (typeof exp === 'number') {
       transformedExp = exp * 2 + 3;
     } else if (typeof exp === 'string') {
@@ -23,6 +28,11 @@ export function transform(strings, ...expressions) {
 
     return `${acc}${transformedExp}${strings[idx + 1]}`;
   }, strings[0]);
+
+  const result = replacers.reduce((acc, rplr) => {
+    return acc.replace(rplr, '');
+  }, formatedString);
+
   return result;
 }
 
