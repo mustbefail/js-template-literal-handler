@@ -8,32 +8,29 @@ export const level = 80;
   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
 */
 export function transform(strings, ...expressions) {
-  let replacers = [];
-  const formatedString = expressions.reduce((acc, exp, idx) => {
-    let transformedExp;
+  const strArgs = [...strings];
+  const expArgs = [...expressions];
 
-    if (typeof exp === 'function') {
-      const afterFunStr = strings[idx + 1];
-      const afterFunExp = expressions[idx + 1];
-      const substr = `${afterFunStr}${transform`${afterFunExp}`}`;
-      transformedExp = exp(afterFunStr, afterFunExp);
-      replacers.push(substr);
-    } else if (typeof exp === 'number') {
-      transformedExp = exp * 2 + 3;
-    } else if (typeof exp === 'string') {
-      transformedExp = exp.toLowerCase();
-    } else if (typeof exp === 'object') {
-      transformedExp = JSON.stringify(exp);
-    } else transformedExp = exp;
+  const transformExp = (exp, idx) => {
+    switch (typeof exp) {
+      case 'function':
+        const strArg = strArgs.splice(idx + 1, 1);
+        const expArg = expArgs.splice(idx + 1, 1);
+        return exp(...strArg, ...expArg);
+      case 'number':
+        return exp * 2 + 3;
+      case 'string':
+        return exp.toLowerCase();
+      case 'object':
+        return JSON.stringify(exp);
+      default:
+        return exp;
+    }
+  };
 
-    return `${acc}${transformedExp}${strings[idx + 1]}`;
+  return expArgs.reduce((acc, exp, idx) => {
+    return `${acc}${transformExp(exp, idx)}${strArgs[idx + 1]}`;
   }, strings[0]);
-
-  const result = replacers.reduce((acc, rplr) => {
-    return acc.replace(rplr, '');
-  }, formatedString);
-
-  return result;
 }
 
 /*
