@@ -5,7 +5,7 @@
   "main": "src/transform.js",
   "scripts": {
     "doctoc": "doctoc --title \"## Contents\" --github README.md",
-    "lint:js": "npx eslint --cache **/*.js",
+    "lint:js": "npx eslint --cache .",
     "lint:js:fix": "npm run lint:js -- --fix",
     "prettify": "npx prettier --write **/*.{js,css,md,html}",
     "lint": "npm run lint:js:fix && npm run prettify",
